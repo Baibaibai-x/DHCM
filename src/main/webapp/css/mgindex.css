@@ -1,0 +1,114 @@
+@CHARSET "UTF-8";
+
+#top{
+	min-width: 1425px;
+	height: 100px;
+}
+#top h1{
+	position: relative;
+	text-align: center;
+	margin-left:-100px; 
+}
+ #index:HOVER,#mg_mg:hover,#mg_user:HOVER,#mg_product:HOVER,#mg_order:HOVER,#mg_warehouse:hover,#mg_statistics:hover{
+	border: 1px solid #ddd; 
+	background-color: #da2545;
+}
+
+#b-left{
+	float:left;
+	width:25%;
+	height:600px;
+	border: solid;
+	}
+#b-right{
+	float:left;
+	width:73%;
+	height:600px;
+	border: solid;
+	margin-left: 10px;
+}
+.none{
+	font-size: 24px;
+	position: relative;
+	color: #CCC;
+}
+#tab{	
+	position:relative;
+	top:15%;
+	left: 10%;
+}
+#tab ul{
+	list-style:none;
+	display:none;	
+	position: relative;
+	top: 33px;
+}
+#tab ul li{
+	border:#CCC solid 1px;
+	height:30px;
+	color: blue;
+}
+#tab div a:hover{
+	color:#3FF;
+	list-style: none;
+}
+.listForm ul li {
+	list-style: none;
+	display: inline-block;
+}
+#tab div{
+	height:50px;
+	border:#CCC solid 1px;
+	width:100px;
+	text-align:center;
+	float: left;
+	/* cursor: pointer; */
+}
+#tab div a{
+	position: relative;
+	top: 13px;
+}
+#tab ul li a{
+	position: relative;
+	top: 4px;
+}
+#putseh{
+	width:300px;
+	height:30px;
+	top:8px;		
+	position:relative;
+	left:25%;
+}
+#putbut{
+	font-size:16px;
+	width:80px;
+	height:35px;
+	top:10px;
+	left:25%;
+	position:relative;
+	color:#FFF;
+	background-color:#F00;
+	border:#FFF;
+}
+#index{
+	font-size:16px;
+	width:80px;
+	height:35px;
+	position:relative;
+	top:10px;
+	left:15%;
+	color:#FFF;
+	background-color:#ccc;
+	border:#F90;
+}
+#mg_mg,#mg_user,#mg_product,#mg_order,#mg_warehouse,#mg_statistics{
+	font-size:16px;
+	width:80px;
+	height:35px;
+	position:relative;
+	top:10px;
+	left:35%;
+	color:#FFF;
+	background-color:#ccc;
+	border:#F90;
+}

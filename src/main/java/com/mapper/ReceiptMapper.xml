@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.ReceiptMapper">
+	<insert id="insertreceipt" parameterType="com.po.Receipt">
+		insert into receipt values(null,#{product_id},#{product_name},#{product_category},#{receipt_img},#{receipt_stock},#{receipt_price},#{receipt_date},#{allprice},#{status})
+	</insert>
+	
+	<select id="selectAlllist" parameterType="com.po.Receipt" resultType="com.po.Receipt">
+		select * from receipt
+		<where>
+			<include refid="select_where"></include>
+		</where>
+	</select>
+	
+	
+	
+	<delete id="deletereceipt" parameterType="Receipt">
+		delete from receipt
+		<where>
+			<include refid="select_where_id"></include>
+		</where>
+	</delete>
+	
+	<update id="updatereceipt" parameterType="Receipt">
+		update receipt set 
+		<choose>
+			<when test="status!=null and status!=''">
+				status=#{status}
+			</when>
+		</choose>
+		<where>
+			<include refid="select_where_id"></include>
+		</where>
+	</update>
+	<sql id="select_where_id">
+		<if test="receipt_id!=null and receipt_id!=''">
+			receipt_id=#{receipt_id}
+		</if>
+	</sql>
+	
+	<sql id="select_where">
+		<if test="product_name!=null and product_name!=''">
+			product_name like '%${product_name}%'
+		</if>
+		<if test="status!=null and status!=''">
+			status=#{status}
+		</if>
+	</sql>
+	
+	<!-- <select id="getcomplete" resultType="Receipt">
+		select product_id,product_name,product_category,receipt_img,sum(receipt_stock)as receipt_stock ,sum(allprice)as allprice
+		from receipt
+		where status="已完成" 
+		group by product_id
+	</select> -->
+	
+</mapper>

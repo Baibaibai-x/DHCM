@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.ProductClassMapper">
+	
+	<!-- 查询所有商品类别 -->
+	 <select id="findProductClassList" 
+	 resultType="com.po.ProductClassesExample">
+	 	select product_category from productclasses
+	 </select>
+	 
+	 <!-- 修改商品类别 -->
+	 <update id="updateByPrimaryKeyWithBLOBs">	 
+		update productclasses set
+		productclasses.product_category=#{product_category}
+		<where>
+			productclasses.product_id=#{product_id}
+		</where>	
+	 </update>
+	 
+	 <!-- 新增商品类别 -->
+	 <insert id="insertProductClass" parameterType="com.po.ProductClassesExample">
+	 	 insert into productclasses(product_id, product_category,product_kind)
+         values (null,#{product_category},#{product_kind})
+	 </insert>
+	 
+	 <!-- 查询商品类别 -->
+	 <select id="selectByPrimaryKey" parameterType="com.po.ProductClassesExample"
+	  resultType="com.po.ProductClassesExample">
+	  	select * from productclasses
+	  	<where>
+	  		<if test="product_id!=null and product_id!=''">
+	  			productclasses.product_id=#{product_id}
+	  		</if>
+	  		<if test="product_category!=null and product_category!=''">
+	  			productclasses.product_category=#{product_category}
+	  		</if>
+	  		<if test="product_kind!=null and product_kind!=''">
+	  			productclasses.product_kind=#{product_kind}
+	  		</if>
+	  	</where>
+	  </select>
+</mapper>

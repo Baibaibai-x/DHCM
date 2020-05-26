@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                           http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+                           http://www.springframework.org/schema/context 
+                           http://www.springframework.org/schema/context/spring-context-4.2.xsd
+                           http://www.springframework.org/schema/aop
+                           http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+                           http://www.springframework.org/schema/mvc
+                           http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
+                           http://www.springframework.org/schema/tx
+                           http://www.springframework.org/schema/tx/spring-tx-4.2.xsd">
+   
+                        	<!-- 定义商品管理的service -->
+	<bean id="userService" class="com.service.impl.UserServiceImpl"></bean>
+	<bean id="productService" class="com.service.impl.ProductServiceImpl"></bean>
+	<bean id="productClassService" class="com.service.impl.ProductClassServiceImpl"></bean>
+	<bean id="orderService" class="com.service.impl.OrderServiceImpl"></bean>
+	<bean id="managerService" class="com.service.impl.ManagerServiceImpl"></bean>
+    <bean id="receiptService" class="com.service.impl.ReceiptServiceImpl"></bean> 
+    <bean id="totalsService" class="com.service.impl.TotalsServiceImpl"></bean>   
+   
+<!-- 加载db.properties文件中的内容，db.properties文件中key的命名要有一定的规则 -->
+
+<context:property-placeholder location="classpath:db.properties"/>
+                           
+<!-- 配置数据库，dbcq -->
+<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+	<property name="driverClassName" value="${jdbc.driver}"></property>
+	<property name="url" value="${jdbc.url}"></property>
+	<property name="username" value="${jdbc.username}"></property>
+	<property name="password" value="${jdbc.password}"></property>
+	<property name="maxActive" value="30"></property>
+	<property name="maxIdle" value="5"></property>
+</bean>
+
+<!-- sqlSessionFactory -->
+<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	<!-- 数据库连接池 -->
+	<property name="dataSource" ref="dataSource"></property>
+	<!-- 加载mybatis的全局配置文件 -->
+	<property name="configLocation" value="classpath:mybatis/sqlMapConfig.xml"></property>
+	<!-- 让mybatis支持PageHelper插件 -->
+	<property name="plugins">
+		<array>
+	
+			<bean class="com.github.pagehelper.PageInterceptor">
+			
+				<property name="properties">
+					<value>
+					reasonable=true
+					</value>
+				</property>
+			
+				
+			</bean>
+		</array>
+	</property>
+</bean>
+
+<!-- mapper扫描器 -->
+<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+	<!-- 扫描包路径，如果需要扫描多个包，中间使用半角逗号隔开 -->
+	<property name="basePackage" value="com.mapper"></property>
+	<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+</bean>
+
+	<!-- 定义一个事务管理器
+		对mybatis操作数据库事物控制，spring使用jdbc的事物控制类
+		 -->
+		 <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		 	<!-- 数据源
+		 	dataSource在applicationContext-dao.xml中配置了
+		 	 -->
+		 	<property name="dataSource" ref="dataSource"></property>
+		 </bean>
+		 
+		 <!-- 通知 -->
+		 <tx:advice id="txAdvice" transaction-manager="transactionManager">
+		 	<tx:attributes>
+		 		<!-- 传播行为 -->
+		 		<tx:method name="sava*" propagation="REQUIRED"/>
+		 		<tx:method name="delete*" propagation="REQUIRED"/>
+		 		<tx:method name="insert*" propagation="REQUIRED"/>
+		 		<tx:method name="update*" propagation="REQUIRED"/>
+		 		<tx:method name="find*" propagation="SUPPORTS" read-only="true"/>
+		 		<tx:method name="get*" propagation="SUPPORTS" read-only="true"/>
+		 		<tx:method name="select*" propagation="SUPPORTS" read-only="true"/>
+		 	</tx:attributes>
+		 </tx:advice>
+		 
+		 <!-- aop -->
+		 <aop:config>
+		 	<aop:advisor advice-ref="txAdvice" pointcut="execution(* com..*.*(..))"/>
+		 </aop:config>
+ </beans>

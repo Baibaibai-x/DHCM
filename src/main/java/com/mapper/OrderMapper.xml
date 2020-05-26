@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.OrderMapper">
+
+	<!-- 新增订单 -->
+	<insert id="insertOrder" parameterType="com.po.OrdersExample">
+    insert into orders(order_id,id,product_id,product_name, product_category,product_brand,order_stock,product_price,order_price, 
+      username, name,phone,address,product_status,order_date,order_img)
+    values (null, #{id},#{product_id}, #{product_name}, #{product_category},#{product_brand},#{order_stock},#{product_price},#{order_price}, 
+      #{username}, #{name},#{phone},#{address},#{product_status},#{order_date},#{order_img})
+    </insert>
+    
+    <!-- 查询订单 -->
+    <select id="selectByPrimaryKey" parameterType="com.po.OrdersQueryVo"
+	 resultType="com.po.OrdersExample">
+	 select * from orders
+	 <where>
+	 	<include refid="query_order_where"></include>
+	 </where>	 
+	 </select>
+	 
+    <!-- sql片段，查询订单信息 -->
+    <sql id="query_order_where">
+    	<if test="ordersExample!=null">
+    		<if test="ordersExample.order_id!=null and ordersExample.order_id!=''">
+				orders.order_id=#{ordersExample.order_id}
+			</if>
+			<if test="ordersExample.id!=null and ordersExample.id!=''">
+				orders.id=#{ordersExample.id}
+			</if>
+			<if test="ordersExample.product_name!=null and ordersExample.product_name!=''">
+				orders.product_name like "%"#{ordersExample.product_name}"%"
+				or orders.product_brand like "%"#{ordersExample.product_name}"%"
+				or orders.product_category like "%"#{ordersExample.product_name}"%"
+				or orders.name like "%"#{ordersExample.product_name}"%"
+			</if>
+			<if test="ordersExample.product_category!=null and ordersExample.product_category!=''">
+				orders.product_category=#{ordersExample.product_category}
+			</if>
+			<if test="ordersExample.username!=null and ordersExample.username!=''">
+				orders.username=#{ordersExample.username}
+			</if>
+			<if test="ordersExample.name!=null and ordersExample.name!=''">
+				orders.name=#{ordersExample.name}
+			</if>
+			<if test="ordersExample.product_status!=null and ordersExample.product_status!=''">
+				orders.product_status=#{ordersExample.product_status}
+			</if>
+		</if>
+    </sql>
+    
+    <!-- 修改订单信息 -->
+	 <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.po.OrdersExample">	 
+		update orders set 	 
+			orders.product_status=#{product_status}
+		 <where>
+		 	<include refid="select_order_id"></include>
+		 </where>
+	 </update>
+	 
+	 <!-- 根据id查询订单信息 -->
+	 <sql id="select_order_id">
+	 	orders.order_id=#{order_id}
+	 </sql>
+    
+     <!-- 查询所有订单 -->
+	 <select id="findOredeList" parameterType="com.po.OrdersQueryVo" 
+	 resultType="com.po.OrdersExample">
+	 	select * from orders
+	 </select>
+	
+	<!-- 删除订单 -->
+	<delete id="deleteorder" parameterType="com.po.OrdersExample">
+		delete from orders
+		<where>
+			<include refid="select_order_id"></include>
+		</where>
+	</delete>
+	
+	<!-- <select id="getcomplete" resultType="OrdersExample">
+		select product_id,product_name,product_category,order_img,sum(order_stock) as order_stock,sum(order_price) as order_price
+		from orders
+		where product_status="已完成"
+		group by product_id 
+	</select> -->
+	
+
+	
+</mapper>

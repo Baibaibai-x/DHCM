@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context 
+                           http://www.springframework.org/schema/context/spring-context-4.2.xsd
+                           http://www.springframework.org/schema/aop
+                           http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+                           http://www.springframework.org/schema/mvc
+                           http://www.springframework.org/schema/mvc/spring-mvc.xsd
+                           http://www.springframework.org/schema/tx
+                           http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+      <!-- 指定扫描controller的包 -->
+     <context:component-scan base-package="com.controller"></context:component-scan>
+     
+      
+      <!-- 使用注解的方式配置映射器和适配器 -->
+      <mvc:annotation-driven conversion-service="conversionService" validator="validator">
+      </mvc:annotation-driven>
+      
+      <!-- 校验器 -->   
+      <bean id="validator"
+      class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+      <!-- hibernate校验器 -->
+      <property name="providerClass" value="org.hibernate.validator.HibernateValidator"></property>
+      <!-- 指定校验使用的资源文件，在文件中配置校验错误信息，如果不指定则默认使用classpath下的ValidationMessages.properties -->
+      <property name="validationMessageSource" ref="messageSource"></property>
+      </bean>
+     
+     <!-- 校验错误信息配置文件 -->
+     <bean id="messageSource"
+     class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+     <!-- 资源文件名 -->
+     <property name="basenames">
+     	<list>
+     		<value>classpath:ProductValidationMessages</value>
+     	</list>
+     </property>
+     <!-- 解决ProductValidationMessages.properties错误信息文件的中文乱码问题 -->
+     <property name="defaultEncoding" value="utf-8"></property>
+     <!-- 资源文件编码格式 -->
+     <property name="fileEncodings" value="utf-8"></property>
+     <!-- 对资源文件内容缓存时间，单位秒 -->
+     <property name="cacheSeconds" value="120"></property>    
+     </bean>
+      
+       <!-- 自定义参数绑定 -->
+      <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+      		<!-- 转换器 -->
+      		<property name="converters">
+      			<list>
+      				<!-- 可以定义多个转换器 -->
+      				<bean class="com.controller.converter.ProductDateConverter"></bean>
+      			</list>
+      		</property>
+      </bean>
+ 	
+ 	  <!-- 文件上传解析器 -->
+      <bean id="multipartResolver"
+     	class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+     	<!-- 设置上传文件的最大尺寸为5MB -->
+     	<property name="maxUploadSize">
+     		<value>5242880</value>
+     	</property>
+      </bean>
+      
+      <!-- 视图解析器
+      解析jsp视图，默认使用jstl标签，classpath下得有jstl的包 
+       -->
+      <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+      <!-- 配置jsp路径的前缀 -->
+      <property name="prefix" value="/WEB-INF/jsp/"></property>
+      <!-- 配置jsp路径的后缀 -->
+      <property name="suffix" value=".jsp"></property>
+      </bean>
+</beans>

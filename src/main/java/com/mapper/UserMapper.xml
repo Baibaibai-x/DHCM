@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.UserMapper">
+	<!-- 进行登陆验证 -->
+	<select id="loginUser" parameterType="com.po.User" resultType="com.po.User">
+		select * from user 
+		<where>
+			user.username=#{username} and user.password=#{password}
+		</where>
+	</select>
+	
+	<!-- 新增用户 -->
+	<insert id="insertUser" parameterType="com.po.UserExample">
+    insert into user (id, username, password,status,name,sex, 
+      phone, address)
+    values (null, #{username},#{password},'正常',#{name},#{sex}, 
+      #{phone}, null)
+    </insert>
+    
+    <!-- sql片段，根据id、username、name之一查询用户信息 -->
+    <sql id="query_user_where">
+    	<if test="userExample!=null">
+			<if test="userExample.id!=null and userExample.id!=''">
+				user.id=#{userExample.id}
+			</if>
+			<if test="userExample.username!=null and userExample.username!=''">
+				user.username = #{userExample.username}
+			</if>
+			<if test="userExample.name!=null and userExample.name!=''">
+				user.name=#{userExample.name}
+			</if>
+		</if>
+    </sql>
+	<!-- 根据用户id、username、name之一查询用户信息 -->
+	 <select id="selectByPrimaryKey" parameterType="com.po.UserQueryVo"
+	 resultType="com.po.UserExample">
+	 select * from user
+	 <where>
+	 	<include refid="query_user_where"></include>
+	 </where>	 
+	 </select>
+	 
+	 <!-- 根据id查询用户信息 -->
+	 <sql id="select_user_id">
+	 	user.id=#{id}
+	 </sql>
+	 
+	 <!-- 修改用户信息 --> 
+	 <update id="updateByPrimaryKeyWithBLOBs">	 
+		update user set
+	 <choose>
+		 <when test="address!=null and address!=''">
+		   user.address=#{address}
+		 </when>
+		 <when test="status!=null and status!=''">
+		 	 user.status=#{status}
+		 </when>
+		 <when test="password!=null and password!=''">
+		 	 user.password=#{password}
+		 </when>
+		 <when test="username!=null and username!=''">
+		 	 user.username=#{username},user.name=#{name},user.sex=#{sex},user.phone=#{phone}
+		 </when>
+		 <otherwise>	 
+			 user.name=#{name},user.sex=#{sex},user.phone=#{phone}
+		 </otherwise>
+	 </choose>  
+		 <where>
+		 	<include refid="select_user_id"></include>
+		 </where>
+	 </update>
+	 
+	 <!-- 查询所有用户 -->
+	 <select id="findUserList" parameterType="com.po.UserQueryVo" 
+	 resultType="com.po.UserExample">
+	 	select * from user
+	 	<where>
+	 		<if test="userExample!=null">
+	 			<if test="userExample.username!=null and userExample.username!=''">
+	 				username like '%${userExample.username}%' or name like '%${userExample.username}%'
+	 			</if>
+	 			<if test="userExample.id!=null and  userExample.id!=''">
+	 				1=1
+	 			</if>
+	 		</if>
+	 	</where>
+	 </select>
+</mapper>

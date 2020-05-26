@@ -1,0 +1,48 @@
+@CHARSET "UTF-8";
+*{
+	padding:0;
+	margin:0;
+}
+a{
+	text-decoration:none;
+}
+body{
+	width: 100%;
+	min-width: 1625px;
+}
+#top{
+	height:40px;
+	background-color:#C0C0C0;
+}
+#top label,#top span{
+	left:10px;
+	position:relative;
+	font-size:9px;
+	top:10px;
+}
+#menu{
+	padding:0 20px 0 20px;
+	position:relative;
+	width: 96%;
+	height: 50px;
+}
+#body{
+	padding:0 20px 0  20px;
+	position:relative;
+	width:96%;
+	height:600px;
+}
+#footer{
+	padding:100px 20px 40px 20px;
+	bottom:0px;
+	height:60px;
+	width:96%;
+	position: relative;
+	text-align: center;
+	font-size: 10px;
+}
+#footer span{
+	padding:0 20px;
+	
+}
+

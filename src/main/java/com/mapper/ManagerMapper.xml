@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.ManagerMapper">
+	<select id="mglogin" parameterType="com.po.Manager" resultType="com.po.Manager">
+		select * from manager
+		<where>
+			<include refid="query_mg_where"></include>
+		</where>
+	</select>
+	
+	<sql id="query_mg_where">
+		<if test="mg_id!=null and mg_id!=''">
+			mg_id=#{mg_id} and mg_password=#{mg_password}
+		</if>
+		
+	</sql>
+	
+	<select id="selectAllmanager" resultType="com.po.Manager">
+		select  * from manager
+		<where>
+			
+			<choose>
+		
+			<when test="mg_name!=null and mg_name!=''">
+			 mg_id not in('sys') and (mg_name like '%${mg_name}%' or mg_id like '%${mg_name}%')
+			</when>
+			<when test="mg_id !=null and mg_id!=''">
+			mg_id=#{mg_id}
+			</when>
+			<otherwise>
+				mg_id not in('sys') 
+			</otherwise>
+			</choose>
+		</where>
+	</select>
+	
+	<update id="updatemanager" parameterType="com.po.Manager">
+		update manager set
+		<choose>
+			<when test="mg_status!=null and mg_status!=''">
+				mg_status=#{mg_status}
+			</when>
+			<when test="mg_name!=null and mg_name!=''">
+				mg_name=#{mg_name},mg_sex=#{mg_sex},mg_phone=#{mg_phone}
+			</when>
+			<when test="mg_password!=null and mg_password!=''">
+				mg_password=#{mg_password}
+			</when>
+		</choose>
+		<where>
+			mg_id=#{mg_id}
+		</where>
+	</update>
+	
+	<!-- 新增管理员 -->
+	<insert id="insertmg" parameterType="com.po.Manager">
+		insert into manager(mg_id,mg_password,mg_name,mg_sex,mg_phone,mg_level,mg_status)
+		values(#{mg_id},#{mg_password},#{mg_name},#{mg_sex},#{mg_phone},'次级权限','正常')
+	</insert>
+	
+	<!-- 根据mg_id等查询管理员信息 -->
+	<select id="selectByPrimaryKey" parameterType="com.po.Manager" resultType="com.po.Manager">
+		select * from manager
+		<where>
+			<choose>
+				<when test="mg_id!=null and mg_id!=''">
+					mg_id=#{mg_id}
+				</when>
+			</choose>
+		</where>
+	</select>
+</mapper>

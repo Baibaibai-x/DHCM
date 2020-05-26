@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.ProductMapper">
+
+	<!-- 新增商品 -->
+	<insert id="insertProduct" parameterType="com.po.ProductExample">
+	<choose>
+		<when test="product_img!=null and product_img!=''">
+		 insert into product(id, product_name, product_category,product_kind,product_img,product_stock,product_price, 
+     		 product_itd, product_brand,product_date,product_status)
+    	 values (null,  #{product_name}, #{product_category},#{product_kind},#{product_img},0,#{product_price}, 
+      		#{product_itd}, #{product_brand},#{product_date},'在售')
+		</when>
+		<otherwise>
+		 insert into product(id, product_name, product_category,product_kind,product_img,product_stock,product_price, 
+    		 product_itd, product_brand,product_date,product_status)
+   	 	 values (null,  #{product_name}, #{product_category},#{product_kind},'无',0,#{product_price}, 
+     		#{product_itd}, #{product_brand},#{product_date},'在售')
+		</otherwise>
+	</choose>
+	
+   
+    </insert>
+    
+    <!-- 查询商品 -->
+    <select id="selectByPrimaryKey" parameterType="com.po.ProductQueryVo"
+	 resultType="com.po.ProductExample">
+	 select * from product
+	 <where>
+	 	<include refid="query_product_where"></include>
+	 </where>	 
+	 </select>
+	 
+    <!-- sql片段，查询商品信息 -->
+    <sql id="query_product_where">
+    	<if test="productExample!=null">
+			<if test="productExample.id!=null and productExample.id!=''">
+				id=#{productExample.id}
+			</if> 
+			<if test="productExample.product_name!=null and productExample.product_name!='' and productExample.product_status!=null">
+				product_name like '%${productExample.product_name}%' and product_status=#{productExample.product_status}
+				or product_itd like '%${productExample.product_name}%' and product_status=#{productExample.product_status}
+				or product_brand like '%${productExample.product_name}%' and product_status=#{productExample.product_status}
+				or product_category like '%${productExample.product_name}%' and product_status=#{productExample.product_status}
+			</if>
+			<if test="productExample.product_name!=null and productExample.product_name!='' and productExample.product_status==null">
+				product_name like '%${productExample.product_name}%' 
+				or product_itd like '%${productExample.product_name}%' 
+				or product_brand like '%${productExample.product_name}%' 
+				or product_category like '%${productExample.product_name}%' 
+			</if>
+			<if test="productExample.product_category!=null and productExample.product_category!='' and productExample.product_status==null">
+				product.product_category=#{productExample.product_category} 
+				or product.product_kind = #{productExample.product_category} 
+			</if>
+			<if test="productExample.product_category!=null and productExample.product_category!='' and productExample.product_status!=null">
+				product.product_category=#{productExample.product_category} and product.product_status=#{productExample.product_status}
+				or product.product_kind = #{productExample.product_category} and product.product_status=#{productExample.product_status}
+			</if>
+			<if test="productExample.product_kind!=null and productExample.product_kind!=''">
+				product.product_kind = #{productExample.product_kind}
+			</if>
+			<if test="productExample.product_status!=null and productExample.product_status!='' and productExample.product_category==null and productExample.product_name==null">
+				product_status=#{productExample.product_status}
+			</if>
+		</if>
+    </sql>
+    
+    <!-- 修改商品信息 -->
+	 <update id="updateByPrimaryKeyWithBLOBs">	 
+		update product set
+	 <choose>
+		 <when test="product_img!=null and product_img!=''">
+		     product.product_name=#{product_name},product.product_category=#{product_category},product.product_img=#{product_img},
+		     product.product_price=#{product_price},product.product_itd=#{product_itd},
+		     product.product_brand=#{product_brand},product.product_date=#{product_date}
+		 </when>
+		 <when test="product_status!=null and product_status!=''">
+		 	 product.product_status=#{product_status}
+		 </when>
+		 <when test="product_stock!=null and product_stock!=''">
+		 	product_stock=product_stock+#{product_stock}
+		 </when>
+		 <otherwise>	 
+			 product.product_name=#{product_name},product.product_category=#{product_category},
+		     product.product_price=#{product_price},product.product_itd=#{product_itd},
+		     product.product_brand=#{product_brand},product.product_date=#{product_date}
+		 </otherwise>
+	 </choose>  
+		 <where>
+		 	<include refid="select_product_id"></include>
+		 </where>
+	 </update>
+	 
+	 <!-- 根据id查询商品信息 -->
+	 <sql id="select_product_id">
+	 	<if test="id!=null and id!=''">
+	 		id=#{id}
+	 	</if>
+	 	<if test="product_name!=null and product_name!='' and id==null or id==''">
+	 		product_name = #{product_name}
+	 	</if>
+	 </sql>
+    
+    
+     <!-- 查询所有商品 -->
+	 <select id="findProductList" parameterType="com.po.ProductQueryVo" 
+	 resultType="com.po.ProductExample">
+	 		
+		select * from product
+		<if test="productExample!=null and productExample!=''">
+			<where>
+			<include refid="query_product_where"></include>
+			</where>
+		</if>
+	
+	 	order by id asc		
+	 		
+	 </select>
+	 
+	 <!-- 商品详情 -->
+	 <select id="selectlist" parameterType="com.po.ProductExample" resultType="com.po.ProductExample">
+	 	select * from product
+	 	<where>
+	 		<include refid="select_product_id"></include>
+	 	</where>
+	 </select>
+	 
+	 <!-- 加入购物车 -->
+	 <insert id="insertShopping" parameterType="com.po.ProductQueryVo">
+	 	insert into shoppingcart (car_id,id,product_id, product_name, product_category,product_img,product_price, 
+      product_itd, product_brand)
+    values (#{shoppingcart.id},#{shoppingcart.id}, #{shoppingcart.product_id},#{shoppingcart.product_name}, 
+    	#{shoppingcart.product_category},#{shoppingcart.product_img},#{shoppingcart.product_price}, 
+        #{shoppingcart.product_itd}, #{shoppingcart.product_brand})
+	 </insert>
+	 
+	 <!-- 查看购物车 -->
+	 <select id="selectAll" parameterType="com.po.ProductQueryVo" resultType="com.po.Shoppingcart">
+	 	select * from shoppingcart
+	 	<where>
+	 		<if test="shoppingcart.product_id!=null and shoppingcart.product_id!=''">
+	 			product_id =#{shoppingcart.product_id} and id=#{shoppingcart.id}
+	 		</if>
+	 		<if test="shoppingcart.car_id!=null and shoppingcart.car_id!=''">
+	 			car_id=#{shoppingcart.car_id}
+	 		</if>
+	 	</where>
+	 </select>
+	 
+	 <!-- 根据id数组删除购物车信息 -->
+	<delete id="deleteByPrimaryKeyWithArrays" parameterType="com.po.ProductQueryVo">
+		delete from shoppingcart where product_id in
+		<foreach collection="products_id" item="products_id" open="(" separator="," close=")">
+			#{products_id}
+		</foreach>
+		and car_id =#{shoppingcart.car_id}
+	</delete>
+</mapper>

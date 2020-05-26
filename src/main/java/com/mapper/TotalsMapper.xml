@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.TotalsMapper">
+
+	<select id="getAllTotals" parameterType="Totals" resultType="Totals">
+		<choose>
+			<when test="product_category!=null and product_category!=''">
+				select product_category,sum(ord_stock)as ord_stock,sum(ord_price)as ord_price,
+				sum(rec_stock)as rec_stock,sum(rec_price)as rec_price,sum(total_price)as total_price
+				from total
+				group by product_category
+			</when>
+			<otherwise>
+				select * from total
+				<where>
+					<include refid="select_total_where"></include>
+				</where>
+			</otherwise>
+		</choose>	
+	</select>	
+	<sql id="select_total_where">
+		<if test="product_name!=null and product_name!=''">
+			product_name like '%${product_name}%'
+			or product_category like '%${product_name}%'
+		</if>
+		<if test="total_price!=null and total_price!='' and total_price gt 0 ">
+			total_price &gt;= 0
+		</if>
+		<if test="total_price!=null and total_price!='' and total_price lt 0">
+			total_price &lt; 0
+		</if>
+		<if test="product_id!=null and product_id !=''">
+			product_id=#{product_id}
+		</if>
+	</sql>
+	
+	<insert id="insertTotals" parameterType="Totals">
+		insert into total values(#{product_id},#{product_name},#{product_category},#{product_img},#{ord_stock},#{ord_price}
+		,#{rec_stock},#{rec_price},#{total_price})
+	</insert>
+	
+	<update id="updateTotals" parameterType="Totals">
+		update total set ord_stock=ord_stock+#{ord_stock},ord_price=ord_price+#{ord_price},rec_stock=rec_stock+#{rec_stock}
+		,rec_price=rec_price+#{rec_price},total_price=total_price+#{total_price}
+		<where>
+			<include refid="update_total_where"></include>
+		</where>
+	</update>
+	
+	<sql id="update_total_where">
+		<if test="product_id !=null and product_id!=''">
+			product_id =#{product_id}
+		</if>
+	</sql>
+</mapper>
